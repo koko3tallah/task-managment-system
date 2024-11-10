@@ -1,0 +1,52 @@
+server:
+  port: 8099
+
+spring:
+  application:
+    name: Task Management System App
+  datasource:
+    url: jdbc:mysql://localhost:3306/tms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
+    username: tms_admin
+    password: P@ssw0rd
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 600000
+      connection-timeout: 20000
+      data-source-properties:
+        useLegacyDatetimeCode: false
+        serverTimezone: UTC
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  liquibase:
+    change-log: classpath:liquibase/db.changelog-master.xml
+    database-change-log-table: TMS_DATABASECHANGELOG
+    database-change-log-lock-table: TMS_DATABASECHANGELOGLOCK
+    default-schema: tms
+    liquibase-schema: tms
+    enabled: false
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+springdoc:
+  swagger-ui:
+    enabled: true
+    disable-swagger-default-url: true
+    path: /swagger-ui.html
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+jwt:
+  secretKey: u4iK9IvQYP7ONwMEC64N7JjZcI6v1zFzHvDgTjCgUQU=
+  ttl: 300000
+  refreshTokenDurationMs: 604800000

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1.0" author="kerolos">
+        <insert schemaName="tms" tableName="user">
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="modified_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="date_of_birth" valueDate="1990-01-01"/>
+            <column name="full_name" value="System Admin"/>
+            <column name="email" value="admin@email.com"/>
+            <!--            Password for 'admin@email.com' is 'password123' (BCrypt hashed)-->
+            <column name="password" value="$2a$10$zDKaUgSFGHvwUuJo4hc1sOMTET.30U0ziOfaeYiokLYcaQy4DTR8O"/>
+            <column name="role" value="ADMIN"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
