@@ -14,6 +14,12 @@ A Spring Boot Technical Exercise Task, Simply for managing tasks with user authe
 
 ## Prerequisites
 
+### Clone the Repository
+```bash
+git clone https://github.com/your-repo/task-management-system.git
+cd task-management-system
+```
+
 - **Java 11+**
 - **MySQL 5.7+**
 - **Maven**
