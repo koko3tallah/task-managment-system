@@ -27,7 +27,7 @@ public class TaskMapper {
         task.setDescription(request.getDescription());
         task.setStatus(request.getStatus());
         task.setPriority(request.getPriority());
-        task.setDueDate(request.getDueDate().toLocalDateTime());
+        task.setDueDate(request.getDueDate() == null ? null : request.getDueDate().toLocalDateTime());
         return task;
     }
 

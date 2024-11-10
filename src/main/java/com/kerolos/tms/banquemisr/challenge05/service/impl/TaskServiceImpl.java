@@ -66,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
         Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
         User user = userRepository.findByEmail(authentication.getName()).orElse(new User());
-        if (!UserRole.ADMIN.equals(user.getRole()) || !existingTask.getCreatedBy().equals(user)) {
+        if (!UserRole.ADMIN.equals(user.getRole()) && !existingTask.getCreatedBy().equals(user)) {
             throw new UnauthorizedException("Logged in user is not authorized to update this task.");
         }
 
@@ -74,7 +74,7 @@ public class TaskServiceImpl implements TaskService {
         existingTask.setDescription(taskRequest.getDescription());
         existingTask.setStatus(taskRequest.getStatus());
         existingTask.setPriority(taskRequest.getPriority());
-        existingTask.setDueDate(taskRequest.getDueDate().toLocalDateTime());
+        existingTask.setDueDate(taskRequest.getDueDate() == null ? null : taskRequest.getDueDate().toLocalDateTime());
 
         Task updatedTask = taskRepository.save(existingTask);
         return taskMapper.convertToResponseDTO(updatedTask);
@@ -89,7 +89,7 @@ public class TaskServiceImpl implements TaskService {
         Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
         User user = userRepository.findByEmail(authentication.getName()).orElse(new User());
-        if (!UserRole.ADMIN.equals(user.getRole()) || !task.getCreatedBy().equals(user)) {
+        if (!UserRole.ADMIN.equals(user.getRole()) && !task.getCreatedBy().equals(user)) {
             throw new UnauthorizedException("Logged in user is not authorized to delete this task.");
         }
 
