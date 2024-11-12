@@ -1,6 +1,7 @@
 package com.kerolos.tms.banquemisr.challenge05.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kerolos.tms.banquemisr.challenge05.data.dto.ChangePasswordRequest;
 import com.kerolos.tms.banquemisr.challenge05.data.dto.JwtResponse;
 import com.kerolos.tms.banquemisr.challenge05.data.dto.LoginRequest;
 import com.kerolos.tms.banquemisr.challenge05.data.dto.RefreshTokenRequest;
@@ -15,20 +16,23 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 
 @WebMvcTest()
 @ContextConfiguration(classes = AuthenticationController.class)
@@ -135,6 +139,47 @@ class AuthenticationControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/auth/logout"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("User logged out successfully."));
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
+    public void testLogoutFail() throws Exception {
+        doThrow(new RuntimeException("User not found")).when(authenticationService)
+                .logout(any(HttpServletRequest.class), any());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/auth/logout"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("User not found"));
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
+    public void changePasswordSuccess() throws Exception {
+        ChangePasswordRequest request = new ChangePasswordRequest("currentPassword", "newPassword");
+
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/auth/change-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Password changed successfully."));
+    }
+
+
+    @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
+    public void changePasswordFailure() throws Exception {
+        ChangePasswordRequest request = new ChangePasswordRequest("currentPassword", "newPassword");
+
+
+        doThrow(new RuntimeException("Change password failed")).when(authenticationService)
+                .changePassword(any(ChangePasswordRequest.class), anyString());
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/auth/change-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Change password failed"));
     }
 
 }
